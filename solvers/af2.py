@@ -79,7 +79,7 @@ class AF2(Operable):
 
     def get_range(self):
         total_deviation = sum(abs(coef) for coef in self.epsilons.values()) + self.non_affine
-        print(self.base, total_deviation, self.non_affine_n, self.non_affine_p)
+        #print(self.base, total_deviation, self.non_affine_n, self.non_affine_p)
         lb = self.base - total_deviation - self.non_affine_n # x_(n+2) debería tomar el valor 0 y x_(n+3) el valor -1
         ub = self.base + total_deviation + self.non_affine_p # x_(n+2) debería tomar el valor 1 y x_(n+3) el valor 0
 
@@ -185,20 +185,20 @@ class AF2(Operable):
             sumatoria += abs(x_coef * other.non_affine_p)
             sumatoria += abs(x_coef * other.non_affine_n)
         
-        print(sumatoria)
+        #print(sumatoria)
 
         for y_idx, y_coef in other.epsilons.items():
             sumatoria += abs(y_coef * self.non_affine)
             sumatoria += abs(y_coef * self.non_affine_p)
             sumatoria += abs(y_coef * self.non_affine_n)
         
-        print(sumatoria)
+        #print(sumatoria)
 
         sumatoria += abs(self.non_affine * other.non_affine_p) + abs(self.non_affine * other.non_affine_n)
         sumatoria += abs(self.non_affine_p * other.non_affine) + abs(self.non_affine_p * other.non_affine_n)
         sumatoria += abs(self.non_affine_n * other.non_affine) + abs(self.non_affine_n * other.non_affine_p)
         
-        print(sumatoria)
+        #print(sumatoria)
         return init + sumatoria
 
     def _k2(self, other):
