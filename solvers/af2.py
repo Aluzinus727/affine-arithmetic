@@ -78,7 +78,8 @@ class AF2(Operable):
         return converted_intervals
 
     def get_range(self):
-        total_deviation = sum(coef for coef in self.epsilons.values()) + self.non_affine
+        total_deviation = sum(abs(coef) for coef in self.epsilons.values()) + self.non_affine
+        print(self.base, total_deviation, self.non_affine_n, self.non_affine_p)
         lb = self.base - total_deviation - self.non_affine_n # x_(n+2) debería tomar el valor 0 y x_(n+3) el valor -1
         ub = self.base + total_deviation + self.non_affine_p # x_(n+2) debería tomar el valor 1 y x_(n+3) el valor 0
 
@@ -172,6 +173,7 @@ class AF2(Operable):
             )
 
     def _k1(self, other):
+        
         init = abs(self.base) * other.non_affine + abs(other.base) * self.non_affine
         sumatoria = 0
         for x_idx, x_coef in self.epsilons.items():
@@ -182,11 +184,21 @@ class AF2(Operable):
             sumatoria += abs(x_coef * other.non_affine)
             sumatoria += abs(x_coef * other.non_affine_p)
             sumatoria += abs(x_coef * other.non_affine_n)
+        
+        print(sumatoria)
+
+        for y_idx, y_coef in other.epsilons.items():
+            sumatoria += abs(y_coef * self.non_affine)
+            sumatoria += abs(y_coef * self.non_affine_p)
+            sumatoria += abs(y_coef * self.non_affine_n)
+        
+        print(sumatoria)
 
         sumatoria += abs(self.non_affine * other.non_affine_p) + abs(self.non_affine * other.non_affine_n)
         sumatoria += abs(self.non_affine_p * other.non_affine) + abs(self.non_affine_p * other.non_affine_n)
         sumatoria += abs(self.non_affine_n * other.non_affine) + abs(self.non_affine_n * other.non_affine_p)
         
+        print(sumatoria)
         return init + sumatoria
 
     def _k2(self, other):
@@ -208,16 +220,16 @@ class AF2(Operable):
         for x_idx, x_coef in self.epsilons.items():
             x_i = self.epsilons.get(x_idx, 0)
             y_i = other.epsilons.get(x_idx, 0)
-            if x_i > 0 and y_i > 0:
+            if x_i*y_i > 0:
                 sumatoria += x_i * y_i
 
-        if self.non_affine > 0 and other.non_affine > 0:
+        if self.non_affine*other.non_affine > 0:
             sumatoria += self.non_affine * other.non_affine
 
-        if self.non_affine_p > 0 and other.non_affine_p > 0:
+        if self.non_affine_p*other.non_affine_p > 0:
             sumatoria += self.non_affine_p * other.non_affine_p
 
-        if self.non_affine_n > 0 and other.non_affine_n > 0:
+        if self.non_affine_n*other.non_affine_n > 0:
             sumatoria += self.non_affine_n * other.non_affine_n
 
         return init + sumatoria
@@ -244,13 +256,13 @@ class AF2(Operable):
             if x_i * y_i < 0:
                 sumatoria += abs(x_i * y_i)
 
-        if self.non_affine < 0 and other.non_affine < 0:
+        if self.non_affine*other.non_affine < 0:
             sumatoria += abs(self.non_affine * other.non_affine)
 
-        if self.non_affine_p < 0 and other.non_affine_p < 0:
+        if self.non_affine_p*other.non_affine_p < 0:
             sumatoria += abs(self.non_affine_p * other.non_affine_p)
 
-        if self.non_affine_n < 0 and other.non_affine_n < 0:
+        if self.non_affine_n*other.non_affine_n < 0:
             sumatoria += abs(self.non_affine_n * other.non_affine_n)
 
         return init + sumatoria
